@@ -20,6 +20,10 @@ ExportedObj/
 *.svd
 *.pdb
 *.opendb
+
+# マニフェスト
+*.pfx
+*.manifest
  
 # ログファイル
 Logs/
