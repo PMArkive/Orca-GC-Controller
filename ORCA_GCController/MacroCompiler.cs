@@ -453,36 +453,40 @@ namespace GCController
                     stopwatches[startLabel].Restart();
                     if (CurrentHitIndex < 0) CurrentHitIndex = 0;
                 }
-                port.PressButton(button, duration);
-                if (token.IsCancellationRequested) return;
-                if (interval > 0) Thread.Sleep(interval);
+
+
+                port.SetButtonState(button);
+
+                if (stopwatches[10].CancelableWait(duration, token)) return;
+
+                port.SetButtonState(ControllerInput.KeysAllUp);
+
+                if (stopwatches[10].CancelableWait(interval, token)) return;
             });
         }
         private void AddWaitCommand(int millisecondsTimeout)
         {
-            commandList.Add((port, token) => 
-            {
-                stopwatches[10].Restart();
-                while(stopwatches[10].ElapsedMilliseconds < millisecondsTimeout && !token.IsCancellationRequested) { }
-            });
+            commandList.Add((port, token) => stopwatches[10].CancelableWait(millisecondsTimeout, token));
         }
         private void AddHitCommand(ControllerInput button, int frame, int label, int duration, int startLabel = -1)
         {
-            var border = frame * 1000 / fps;
+            var border = (int)(frame * 1000 / fps);
             hitFrames.Add((label, frame));
             commandList.Add((port, token) =>
             {
-                while (stopwatches[label].ElapsedMilliseconds < border)
-                {
-                    if (token.IsCancellationRequested) return;
-                }
+                if (stopwatches[label].CancelableWait(border, token, false)) return;
+
                 CurrentHitIndex++;
                 if (startLabel != -1) 
                 {
                     stopwatches[startLabel].Restart();
                     if (CurrentHitIndex < 0) CurrentHitIndex = 0;
                 }
-                port.PressButton(button, duration);
+                port.SetButtonState(button);
+
+                if (stopwatches[10].CancelableWait(duration, token)) return;
+
+                port.SetButtonState(ControllerInput.KeysAllUp);
             });
         }
         private void AddStartCommand(int label)
