@@ -162,7 +162,7 @@ namespace GCController
 
                 if (args.Length == 1)
                 {
-                    if (args[0].Substring(0, 2) != "-l=")
+                    if (args[0].Substring(0, 3) != "-s=")
                     {
                         IsValid = false;
                         ErrorMessage = "オプション指定子が不正です";
@@ -170,10 +170,11 @@ namespace GCController
                         return;
                     }
 
-                    if (args[0].Length != 1 || !int.TryParse(args[0], out StopWatchLabel))
+                    var val = args[0].Substring(3);
+                    if (val.Length != 1 || !int.TryParse(val, out StopWatchLabel))
                     {
                         IsValid = false;
-                        ErrorMessage = "-lオプションは1桁の数字である必要があります";
+                        ErrorMessage = "-sオプションは1桁の数字である必要があります";
                     }
 
                 }
@@ -415,88 +416,11 @@ namespace GCController
 
                         timerStarted[commandArgs.StopWatchLabel] = true;
                     }
-                    Console.WriteLine(commandArgs.StopWatchLabel);
+
                     macro.AddStartCommand(commandArgs.StopWatchLabel);
                     existsCommand = true;
                 }
 
-                switch (args[0])
-                {
-                    case "Hit":
-                        {
-                            if (!(args.Length == 3 || args.Length == 4 || args.Length == 5 || args.Length == 6))
-                                throw new Exception($"[{i + 1}行目] Hitコマンドの引数が不正です");
-
-                            // 第1引数はボタン指定.
-                            if (!buttonMap.TryGetValue(args[1], out ControllerInput button))
-                                throw new Exception($"[{i + 1}行目] Hitコマンドの第1引数(ボタン指定)が不正です");
-
-                            // 第2引数はフレーム.
-                            if (!int.TryParse(args[2], out int frame) || frame < 0)
-                                throw new Exception($"[{i + 1}行目] Hitコマンドの第2引数(フレーム指定)は32bit符号あり整数に収まる負でない数値である必要があります");
-
-                            // 第3引数はラベル.
-                            int label = 0;
-                            if (args.Length >= 4)
-                            {
-                                if (!int.TryParse(args[3], out label) || args[3].Length != 1)
-                                    throw new Exception($"[{i + 1}行目] Hitコマンドの第3引数(タイマーラベル指定)は1桁の数字である必要があります");
-                            }
-                            if (!timerStarted[label])
-                                throw new Exception($"[{i + 1}行目] Hitコマンドはタイマー起動より後に書かれる必要があります");
-
-                            // 第4引数は押下時間
-                            int duration = 200;
-                            if (args.Length >= 5 && (!int.TryParse(args[4], out duration) || duration < 0))
-                                throw new Exception($"[{i + 1}行目] Hitコマンドの第4引数(ボタン押下時間)は32bit符号あり整数に収まる負でない数値である必要があります");
-
-
-                            // 第5引数は開始するタイマーのラベル.
-                            int slabel = -1;
-                            if (args.Length == 6)
-                            {
-                                if (!int.TryParse(args[5], out slabel) || args[5].Length != 1)
-                                    throw new Exception($"[{i + 1}行目] Hitコマンドの第5引数は1桁の数字である必要があります");
-
-                                if (slabel != -1 && timerStarted[slabel])
-                                    throw new Exception($"[{i + 1}行目] タイマー{slabel}の開始命令が重複しています");
-                                if (slabel != -1)
-                                    timerStarted[slabel] = true;
-                            }
-
-
-                            // フレーム待機してボタンを押す処理を追加する.
-                            macro.AddHitCommand(button, frame, label, duration, slabel);
-                            existsCommand = true;
-                        }
-                        break;
-                    case "Start":
-                        {
-                            if (args.Length > 2)
-                                throw new Exception($"[{i + 1}行目] Startコマンドの引数が不正です");
-
-                            // "-l=[0-9]"
-                            int label = 0;
-                            if (args.Length == 2)
-                            {
-                                if(!Regex.IsMatch(args[1], "-l=[0-9]"))
-                                    throw new Exception($"[{i + 1}行目] Startコマンドの-lは1桁の数字である必要があります");
-
-                                label = int.Parse(args[1].Substring(2));
-                            }
-
-                            // ラベル{i}のタイマーをスタートさせる命令が既に書かれていた場合の例外.
-                            if (timerStarted[label])
-                                throw new Exception($"[{i + 1}行目] タイマー{label}の開始命令が重複しています");
-
-                            timerStarted[label] = true;
-
-                            // ラベル{i}のタイマーをスタートさせる処理を追加する.
-                            macro.AddStartCommand(label);
-                            existsCommand = true;
-                        }
-                        break;
-                }
             }
 
             if (!existsCommand) throw new Exception("有効なコマンドがありませんでした");
