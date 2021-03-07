@@ -210,7 +210,7 @@ namespace GCController
         {
             try
             {
-                macroScript = MacroScript.Compile(scriptBox.Text.Replace("\r\n", "\n").Replace("\n\n", "\n").Split('\n'));
+                macroScript = MacroScript.Compile(scriptBox.Text.Replace("\r\n", "\n").Split(new[] { '\n', '\r' }));
                 runButton.Enabled = true;
                 logBox.AppendText("コンパイルに成功しました\r\n");
             }
@@ -252,6 +252,7 @@ namespace GCController
                 await macroScript?.RunOnceAsync(port, macroCancellationTokenSource.Token);
             
             timer1.Enabled = false;
+            this.Text = "Orca GC Controller";
             var canceled = macroCancellationTokenSource.IsCancellationRequested;
             logBox.AppendText(canceled ? "マクロが中断されました\r\n" : "マクロが終了しました\r\n");
             loopCheckBox.Enabled = keyConStartButton.Enabled = compileButton.Enabled = runButton.Enabled = true;
@@ -273,15 +274,24 @@ namespace GCController
         private (int,int)[] frameList;
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            var index = macroScript.CurrentHitIndex;
-            if (index < 0 || index >= frameList.Length)
+            // 実行中の行の更新
             {
-                textBox1.Text = "";
+                var index = macroScript.CurrentLine;
+                this.Text = "Orca GC Controller" + (index != -1 ? $" ({index+1}行目 実行中)" : "");
             }
-            else
+
+            // 待機時間の更新
             {
-                var label = frameList[index].Item1;
-                textBox1.Text = $"{(frameList[index].Item2 - macroScript.CurrentFrame(label)) / 60} [sec]";
+                var index = macroScript.CurrentHitIndex;
+                if (index < 0 || index >= frameList.Length)
+                {
+                    textBox1.Text = "";
+                }
+                else
+                {
+                    var label = frameList[index].Item1;
+                    textBox1.Text = $"{(frameList[index].Item2 - macroScript.CurrentFrame(label)) / 60} [sec]";
+                }
             }
         }
 
