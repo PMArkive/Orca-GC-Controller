@@ -54,10 +54,10 @@ namespace GCController
             this.名前を付けて保存ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.上書き保存ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.キーコンフィグToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.マクロ終了後にキーボードモードに移行ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.非アクティブキー入力有向ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loopCheckBox = new System.Windows.Forms.CheckBox();
-            this.キーコンフィグToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptBox = new Sgry.Azuki.WinForms.AzukiControl();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -241,28 +241,28 @@ namespace GCController
             // 新規作成ToolStripMenuItem
             // 
             this.新規作成ToolStripMenuItem.Name = "新規作成ToolStripMenuItem";
-            this.新規作成ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.新規作成ToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.新規作成ToolStripMenuItem.Text = "新規作成";
             this.新規作成ToolStripMenuItem.Click += new System.EventHandler(this.新規作成ToolStripMenuItem_Click);
             // 
             // 開くToolStripMenuItem
             // 
             this.開くToolStripMenuItem.Name = "開くToolStripMenuItem";
-            this.開くToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.開くToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.開くToolStripMenuItem.Text = "開く";
             this.開くToolStripMenuItem.Click += new System.EventHandler(this.開くToolStripMenuItem_Click);
             // 
             // 名前を付けて保存ToolStripMenuItem
             // 
             this.名前を付けて保存ToolStripMenuItem.Name = "名前を付けて保存ToolStripMenuItem";
-            this.名前を付けて保存ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.名前を付けて保存ToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.名前を付けて保存ToolStripMenuItem.Text = "名前を付けて保存";
             this.名前を付けて保存ToolStripMenuItem.Click += new System.EventHandler(this.名前を付けて保存ToolStripMenuItem_Click);
             // 
             // 上書き保存ToolStripMenuItem
             // 
             this.上書き保存ToolStripMenuItem.Name = "上書き保存ToolStripMenuItem";
-            this.上書き保存ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.上書き保存ToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.上書き保存ToolStripMenuItem.Text = "上書き保存";
             this.上書き保存ToolStripMenuItem.Click += new System.EventHandler(this.上書き保存ToolStripMenuItem_Click);
             // 
@@ -275,6 +275,13 @@ namespace GCController
             this.settingToolStripMenuItem.Name = "settingToolStripMenuItem";
             this.settingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.settingToolStripMenuItem.Text = "Setting";
+            // 
+            // キーコンフィグToolStripMenuItem
+            // 
+            this.キーコンフィグToolStripMenuItem.Name = "キーコンフィグToolStripMenuItem";
+            this.キーコンフィグToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.キーコンフィグToolStripMenuItem.Text = "キーコンフィグ";
+            this.キーコンフィグToolStripMenuItem.Click += new System.EventHandler(this.キーコンフィグToolStripMenuItem_Click);
             // 
             // マクロ終了後にキーボードモードに移行ToolStripMenuItem
             // 
@@ -306,13 +313,6 @@ namespace GCController
             this.loopCheckBox.Text = "loop";
             this.loopCheckBox.UseVisualStyleBackColor = true;
             // 
-            // キーコンフィグToolStripMenuItem
-            // 
-            this.キーコンフィグToolStripMenuItem.Name = "キーコンフィグToolStripMenuItem";
-            this.キーコンフィグToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
-            this.キーコンフィグToolStripMenuItem.Text = "キーコンフィグ";
-            this.キーコンフィグToolStripMenuItem.Click += new System.EventHandler(this.キーコンフィグToolStripMenuItem_Click);
-            // 
             // scriptBox
             // 
             this.scriptBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -327,7 +327,7 @@ namespace GCController
             | Sgry.Azuki.DrawingOption.HighlightsMatchedBracket)));
             this.scriptBox.DrawsEolCode = false;
             this.scriptBox.FirstVisibleLine = 0;
-            this.scriptBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.scriptBox.Font = new System.Drawing.Font("Consolas", 9F);
             fontInfo1.Name = "Consolas";
             fontInfo1.Size = 9;
             fontInfo1.Style = System.Drawing.FontStyle.Regular;

@@ -56,7 +56,7 @@ namespace GCController
 
                 // 許可されているオプション引数は-d, -i, -s
                 var options = optionCharactors.ToDictionary(_ => _, _ => "");
-                Console.WriteLine(String.Join(",", args));
+
                 for (int i = 1; i < args.Length; i++)
                 {
                     if (args[i].Length < 4 || !Regex.IsMatch(args[i].Substring(0, 3), $"-[{string.Join(",", optionCharactors)}]="))
@@ -324,8 +324,8 @@ namespace GCController
         {
             var timerStarted = new bool[10];
             var macro = new MacroScript();
-            var existsCommand = false;
 
+            var mapping = new List<int>();
             for (int i = 0; i < macroLines.Length; i++)
             {
                 var line = macroLines[i];
@@ -344,7 +344,7 @@ namespace GCController
                     args = temp;
                 }
 
-                if(commandName == "Press")
+                if (commandName == "Press")
                 {
                     var commandArgs = new PressCommandArgs();
                     commandArgs.Convert(args);
@@ -360,13 +360,14 @@ namespace GCController
                         timerStarted[commandArgs.StopWatchLabel] = true;
                     }
 
-                    Console.WriteLine(commandArgs.StopWatchLabel);
                     foreach (var b in commandArgs.Buttons)
+                    {
                         macro.AddPressCommand(b, commandArgs.Duration, commandArgs.Interval, commandArgs.StopWatchLabel);
 
-                    existsCommand = true;
+                        mapping.Add(i);
+                    }
                 }
-                if(commandName == "Wait")
+                if (commandName == "Wait")
                 {
                     var commandArgs = new WaitCommandArgs();
                     commandArgs.Convert(args);
@@ -374,9 +375,10 @@ namespace GCController
                         throw new Exception($"[{i + 1}行目] Waitコマンド " + commandArgs.ErrorMessage);
 
                     macro.AddWaitCommand(commandArgs.DurationMillisecond);
-                    existsCommand = true;
+
+                    mapping.Add(i);
                 }
-                if(commandName == "Hit")
+                if (commandName == "Hit")
                 {
                     var commandArgs = new HitCommandArgs();
                     commandArgs.Convert(args);
@@ -398,8 +400,7 @@ namespace GCController
 
                     macro.AddHitCommand(commandArgs.Button, commandArgs.Frame, commandArgs.StopWatchLabel, commandArgs.Duration, commandArgs.StartStopWatchLabel);
 
-                    existsCommand = true;
-
+                    mapping.Add(i);
                 }
                 if (commandName == "Start")
                 {
@@ -418,12 +419,14 @@ namespace GCController
                     }
 
                     macro.AddStartCommand(commandArgs.StopWatchLabel);
-                    existsCommand = true;
-                }
 
+                    mapping.Add(i);
+                }
             }
 
-            if (!existsCommand) throw new Exception("有効なコマンドがありませんでした");
+            if (mapping.Count == 0) throw new Exception("有効なコマンドがありませんでした");
+
+            macro.lineMapping = mapping.ToArray();
 
             return macro;
         }
@@ -438,8 +441,13 @@ namespace GCController
         private readonly List<Action<SerialPort, CancellationToken>> commandList;
         private readonly Stopwatch[] stopwatches; // 0 - 9はlabel指定, 10はWaitコマンド用.
         private readonly List<(int, int)> hitFrames = new List<(int, int)>();
+        private int[] lineMapping;
 
-        public int CurrentLine { get; private set; } = -1;
+
+        public int CurrentCommandIndex { get; private set; } = -1;
+
+        public int CurrentLine { get => CurrentCommandIndex != -1 ? lineMapping[CurrentCommandIndex] : -1; }
+
         public int CurrentHitIndex { get; private set; } = -1;
         public int CurrentFrame(int label) => (int)(stopwatches[label].ElapsedMilliseconds * fps / 1000);
         public (int,int)[] HitFrames { get { return hitFrames.ToArray(); } }
@@ -499,12 +507,11 @@ namespace GCController
             return Task.Run(() =>
             {
                 CurrentHitIndex = -1;
-                for (int i = 0; i < commandList.Count && !token.IsCancellationRequested; i++)
+                for (CurrentCommandIndex = 0; CurrentCommandIndex < commandList.Count && !token.IsCancellationRequested; CurrentCommandIndex++)
                 {
-                    CurrentLine++;
-                    commandList[i](port, token);
+                    commandList[CurrentCommandIndex](port, token);
                 }
-                CurrentHitIndex = CurrentLine = -1;
+                CurrentHitIndex = CurrentCommandIndex = -1;
             }, token);
         }
         public Task RunLoopAsync(SerialPort port, CancellationToken token)
@@ -514,14 +521,13 @@ namespace GCController
                 CurrentHitIndex = -1;
                 while (!token.IsCancellationRequested)
                 {
-                    for (int i = 0; i < commandList.Count && !token.IsCancellationRequested; i++)
+                    for (CurrentCommandIndex = 0; CurrentCommandIndex < commandList.Count && !token.IsCancellationRequested; CurrentCommandIndex++)
                     {
-                        CurrentLine++;
-                        commandList[i](port, token);
+                        commandList[CurrentCommandIndex](port, token);
                     }
-                    CurrentHitIndex = CurrentLine = -1;
+                    CurrentHitIndex = CurrentCommandIndex = -1;
                 }
-                CurrentHitIndex = CurrentLine = -1;
+                CurrentHitIndex = CurrentCommandIndex = -1;
             }, token);
         }
     }
