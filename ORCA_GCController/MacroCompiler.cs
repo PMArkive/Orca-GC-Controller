@@ -195,7 +195,7 @@ namespace GCController
             private readonly char[] optionCharactors = new char[] { 'l', 'd', 's', 'c' };
             public void Convert(string[] args)
             {
-                if (args.Length < 2 || args.Length > 5)
+                if (args.Length < 2 || args.Length > 6)
                 {
                     IsValid = false;
                     ErrorMessage = "引数の数が不正です";
