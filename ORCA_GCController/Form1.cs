@@ -252,6 +252,7 @@ namespace GCController
                 await macroScript?.RunOnceAsync(port, macroCancellationTokenSource.Token);
             
             timer1.Enabled = false;
+            textBox1.Text = "";
             this.Text = "Orca GC Controller";
             var canceled = macroCancellationTokenSource.IsCancellationRequested;
             logBox.AppendText(canceled ? "マクロが中断されました\r\n" : "マクロが終了しました\r\n");
@@ -290,7 +291,8 @@ namespace GCController
                 else
                 {
                     var label = frameList[index].Item1;
-                    textBox1.Text = $"{(frameList[index].Item2 - macroScript.CurrentFrame(label)) / 60} [sec]";
+                    var sec = (frameList[index].Item2 - macroScript.CurrentFrame(label)) / 60;
+                    textBox1.Text = sec >= 0 ? $"{sec} [sec]" : "Not in Time !!!";
                 }
             }
         }
