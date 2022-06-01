@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO.Ports;
 
-namespace GCController.SerialCommunicationWrapper
+namespace ArduinoAPI
 {
 
     /// <summary>
@@ -43,11 +43,11 @@ namespace GCController.SerialCommunicationWrapper
             var buttonState2 = (byte)((ushort)button >> 8);
             var sendKeys = new byte[4] { HEAD, buttonState1, buttonState2, 0 };
 
-            port.Write(sendKeys, 0, 3);
+            port?.Write(sendKeys, 0, 3);
             sw.Restart();
             while (sw.ElapsedMilliseconds < wait_ms) { }
 
-            port.Write(keysAllUp, 0, 3);
+            port?.Write(keysAllUp, 0, 3);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace GCController.SerialCommunicationWrapper
             var buttonState2 = (byte)((ushort)buttonsState >> 8);
             var sendKeys = new byte[3] { HEAD, buttonState1, buttonState2 };
 
-            port.Write(sendKeys, 0, 3);
+            port?.Write(sendKeys, 0, 3);
         }
     }
 }

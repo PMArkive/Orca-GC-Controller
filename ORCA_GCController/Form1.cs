@@ -7,13 +7,15 @@ using System.Drawing;
 using System.Linq;
 using System.IO;
 using System.IO.Ports;
-using System.Text;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GCController.SerialCommunicationWrapper;
+using GCController.Macro;
+using ArduinoAPI;
 using Sgry.Azuki;
 using Sgry.Azuki.Highlighter;
+using ORCA_Plugin;
 
 namespace GCController
 {
@@ -37,7 +39,7 @@ namespace GCController
             }, CharClass.Keyword);
             keywordHighlighter.AddKeywordSet(new string[]
             {
-                "A", "B", "dD", "dL", "dR", "dU","L", "R", "Sl", "St", "tl", "Z"
+                "A", "B", "dD", "dL", "dR", "dU","L", "R", "Sl", "St", "tl", "X", "Y", "Z"
             }, CharClass.Value);
             keywordHighlighter.AddRegex("-[a-z]=", CharClass.Keyword2);
             keywordHighlighter.AddRegex("-[0-9]", CharClass.Number);
@@ -143,6 +145,7 @@ namespace GCController
             keyConStartButton.Enabled = false;
             keyConStopButton.Enabled = true;
             logBox.AppendText("コントローラモードを開始しました\r\n");
+            ActiveControl = textBox1;
             await InputKeyAsync(controllerCancellationTokenSource.Token);
             logBox.AppendText("コントローラモードを終了しました\r\n");
             keyConStartButton.Enabled = true;
@@ -174,6 +177,7 @@ namespace GCController
                         if (NativeMethods.IsKeyPress(Keys.Z)) keys |= ControllerInput.A;
                         if (NativeMethods.IsKeyPress(Keys.X)) keys |= ControllerInput.B;
                         if (NativeMethods.IsKeyPress(Keys.C)) keys |= ControllerInput.Z;
+                        if (NativeMethods.IsKeyPress(Keys.V)) keys |= ControllerInput.X;
                         if (NativeMethods.IsKeyPress(Keys.Left)) keys |= ControllerInput.Left;
                         if (NativeMethods.IsKeyPress(Keys.Right)) keys |= ControllerInput.Right;
                         if (NativeMethods.IsKeyPress(Keys.Up)) keys |= ControllerInput.Up;
@@ -210,7 +214,13 @@ namespace GCController
         {
             try
             {
-                macroScript = MacroScript.Compile(scriptBox.Text.Replace("\r\n", "\n").Split(new[] { '\n', '\r' }));
+                var script = scriptBox.Text.Replace("\r\n", "\n").Split(new[] { '\n', '\r' });
+                var parsers = MacroScript.GetDefaultParsers();
+                foreach(var (key, p) in ImportPlugins())
+                {
+                    if (!parsers.ContainsKey(key)) parsers.Add(key, p);
+                }
+                macroScript = MacroScript.Compile(script, parsers);
                 runButton.Enabled = true;
                 logBox.AppendText("コンパイルに成功しました\r\n");
             }
@@ -227,11 +237,7 @@ namespace GCController
 
         private async Task RunMacro()
         {
-            if (port == null || !port.IsOpen)
-            {
-                logBox.AppendText("ポートが開放されていません\r\n");
-                return;
-            }
+            if (port == null || !port.IsOpen) { logBox.AppendText("ポートが開放されていません\r\n"); return; }
             if (macroScript == null)
             {
                 logBox.AppendText("マクロが検証されていません\r\n");
@@ -242,17 +248,16 @@ namespace GCController
             loopCheckBox.Enabled = keyConStartButton.Enabled = keyConStopButton.Enabled = compileButton.Enabled = runButton.Enabled = false;
             cancelButton.Enabled = true;
 
-            frameList = macroScript.HitFrames;
             logBox.AppendText("マクロを実行します\r\n");
             timer1.Enabled = true;
 
             if (loopCheckBox.Checked)
-                await macroScript?.RunLoopAsync(port, macroCancellationTokenSource.Token);
+                await macroScript?.RunLoopAsync(port, macroCancellationTokenSource.Token, (int)loopBox.Value);
             else
                 await macroScript?.RunOnceAsync(port, macroCancellationTokenSource.Token);
-            
+
             timer1.Enabled = false;
-            textBox1.Text = "";
+            toolStripStatusLabel1.Text = "";
             this.Text = "Orca GC Controller";
             var canceled = macroCancellationTokenSource.IsCancellationRequested;
             logBox.AppendText(canceled ? "マクロが中断されました\r\n" : "マクロが終了しました\r\n");
@@ -262,7 +267,6 @@ namespace GCController
             if (!canceled && マクロ終了後にキーボードモードに移行ToolStripMenuItem.Checked)
             {
                 this.Activate();
-                ActiveControl = textBox1;
                 StartKeyboardController();
             }
         }
@@ -272,27 +276,28 @@ namespace GCController
             macroCancellationTokenSource?.Cancel();
         }
 
-        private (int,int)[] frameList;
         private void Timer1_Tick(object sender, EventArgs e)
         {
             // 実行中の行の更新
             {
                 var index = macroScript.CurrentLine;
-                this.Text = "Orca GC Controller" + (index != -1 ? $" ({index+1}行目 実行中)" : "");
+                var loop = macroScript.CurrentLoopIndex;
+                this.Text = "Orca GC Controller"
+                    + (index != -1 ? $" ({index + 1}行目 実行中)" : "")
+                    + (loop != -1 ? $" ({loop+1}回目)" : "");
             }
 
             // 待機時間の更新
             {
-                var index = macroScript.CurrentHitIndex;
-                if (index < 0 || index >= frameList.Length)
+                var f = macroScript.GetRemainingFrame();
+                if (!f.HasValue)
                 {
-                    textBox1.Text = "";
+                    toolStripStatusLabel1.Text = "";
                 }
                 else
                 {
-                    var label = frameList[index].Item1;
-                    var sec = (frameList[index].Item2 - macroScript.CurrentFrame(label)) / 60;
-                    textBox1.Text = sec >= 0 ? $"{sec} [sec]" : "Not in Time !!!";
+                    var sec = f.Value / 60;
+                    toolStripStatusLabel1.Text = sec >= 0 ? $"{sec} [sec]" : "Not in Time !!!";
                 }
             }
         }
@@ -362,6 +367,45 @@ namespace GCController
         private void キーコンフィグToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("実装はもうちょっと待っててね");
+        }
+
+        private IEnumerable<(string commandName, IMacroCommandParser<MacroCommand> parser)> ImportPlugins()
+        {
+            var pluginDir = $"{Application.StartupPath}/Plugin";
+
+            //EXEの場所にあるDLLファイルをすべて読み込む
+            foreach (var path in Directory.GetFiles(pluginDir).Where(_ => _.ToLower().EndsWith(".dll")))
+            {
+                //ファイル読み込み
+                var asm = Assembly.LoadFrom(path);
+
+                var commandTypes = asm.GetTypes().Where(_ => _.BaseType == typeof(MacroCommand));
+
+                // MacroCommandParser<T>を継承したクラスを走査する
+                foreach (var type in asm.GetTypes()
+                    .Where(_ => !_.IsGenericType && // ジェネリックなクラスは除外する
+                                !_.IsAbstract &&    // 抽象クラスは除外する
+                                !_.IsInterface))
+                {
+                    if (type.GetConstructors().Where(_ => _.IsPublic && _.GetParameters().Length == 0).Count() == 0) continue;
+
+                    var itf = type.GetInterfaces().Where(_ => _.IsGenericType && _.GetGenericTypeDefinition() == typeof(IMacroCommandParser<>)).FirstOrDefault();
+                    if (itf == null) continue;
+
+                    var attr = type.GetCustomAttribute<MacroCommandAttribute>();
+                    if (attr is null) continue;
+
+                    var commandType = itf.GetGenericArguments().First();
+                    Debug.Print($"{type.Name} {type.FullName} {type.ReflectedType} {itf.Name} {commandType.Name}");
+
+                    //対象のクラスのインスタンスを作成
+                    var parser = Activator.CreateInstance(type) as IMacroCommandParser<MacroCommand>;
+
+                    logBox.AppendText($"Plugin {attr.CommandName}コマンドを読み込みました\r\n");
+
+                    yield return (attr.CommandName, parser);
+                }
+            }
         }
     }
 }
