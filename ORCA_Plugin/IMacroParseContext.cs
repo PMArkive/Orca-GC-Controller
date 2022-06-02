@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ORCA_Plugin
 {
-    public interface IMacroParseContext
+    public interface IMacroParserContext
     {
         /// <summary>
         /// 現在読んでいるマクロの行数です。
@@ -31,45 +31,5 @@ namespace ORCA_Plugin
         /// <param name="label"></param>
         /// <param name="frame"></param>
         void AddHitPlan(int label, int frame);
-
-        /// <summary>
-        /// コマンドのコンパイル中に保持される変数です。
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        string GetStringContext(string key);
-        /// <summary>
-        /// コマンドのコンパイル中に保持される変数です。
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        void SetStringContext(string key, string value);
-
-        /// <summary>
-        /// コマンドのコンパイル中に保持される変数です。
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        int? GetIntContext(string key);
-        /// <summary>
-        /// コマンドのコンパイル中に保持される変数です。
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        void SetIntContext(string key, int value);
-
-        /// <summary>
-        /// コマンドのコンパイル中に保持される変数です。
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        object GetObjectContext(string key);
-        /// <summary>
-        /// コマンドのコンパイル中に保持される変数です。
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        void SetObjectContext(string key, object value);
-
     }
 }

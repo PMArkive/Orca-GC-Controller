@@ -19,7 +19,7 @@ namespace ORCA_Plugin
         /// <param name="args"></param>
         /// <param name="errorMessage"></param>
         /// <returns></returns>
-        T Parse(string[] args, IMacroParseContext context, out string errorMessage);
+        T Parse(string[] args, IMacroParserContext context, out string errorMessage);
     }
 
     public sealed class MacroCommandAttribute : System.Attribute

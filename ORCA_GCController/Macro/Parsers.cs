@@ -18,7 +18,7 @@ namespace GCController.Macro
             o = $"[{line+1}行目] Pressコマンド {message}";
             return null;
         }
-        public PressCommand Parse(string[] args, IMacroParseContext context, out string errorMessage)
+        public PressCommand Parse(string[] args, IMacroParserContext context, out string errorMessage)
         {
             if (args.Length == 0 || args.Length > 4)
                 return ReturnError(context.CurrentLine, "引数の数が不正です", out errorMessage);
@@ -96,7 +96,7 @@ namespace GCController.Macro
             o = $"[{line+1}行目] Waitコマンド {message}";
             return null;
         }
-        public WaitCommand Parse(string[] args, IMacroParseContext context, out string errorMessage)
+        public WaitCommand Parse(string[] args, IMacroParserContext context, out string errorMessage)
         {
             if (args.Length != 1)
                 return ReturnError(context.CurrentLine, "引数の数が不正です", out errorMessage);
@@ -116,7 +116,7 @@ namespace GCController.Macro
             o = $"[{line+1}行目] Startコマンド {message}";
             return null;
         }
-        public StartCommand Parse(string[] args, IMacroParseContext context, out string errorMessage)
+        public StartCommand Parse(string[] args, IMacroParserContext context, out string errorMessage)
         {
             if (args.Length > 1)
                 return ReturnError(context.CurrentLine, "引数の数が不正です", out errorMessage);
@@ -151,7 +151,7 @@ namespace GCController.Macro
             o = $"[{line+1}行目] Hitコマンド {message}";
             return null;
         }
-        public HitCommand Parse(string[] args, IMacroParseContext context, out string errorMessage)
+        public HitCommand Parse(string[] args, IMacroParserContext context, out string errorMessage)
         {
             if (args.Length < 2 || args.Length > 6)
                 return ReturnError(context.CurrentLine, "引数の数が不正です", out errorMessage);

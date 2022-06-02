@@ -9,7 +9,7 @@ using ORCA_Plugin;
 
 namespace GCController.Macro
 {
-    class ParserContext : IMacroParseContext
+    class ParserContext : IMacroParserContext
     {
         public int CurrentLine { get; set; }
 
@@ -29,18 +29,6 @@ namespace GCController.Macro
         public void AddHitPlan(int label, int frame)
             => _hitPlan.Add((label, frame));
         public (int Label, int Frame)[] GetHitPlan() => _hitPlan.ToArray();
-
-        private readonly Dictionary<string, int> _intContext = new Dictionary<string, int>();
-        public int? GetIntContext(string key) => _intContext.ContainsKey(key) ? _intContext[key] : null as int?;
-        public void SetIntContext(string key, int value) => _intContext[key] = value;
-
-        private readonly Dictionary<string, string> _stringContext = new Dictionary<string, string>();
-        public string GetStringContext(string key) => _stringContext.ContainsKey(key) ? _stringContext[key] : null;
-        public void SetStringContext(string key, string value) => _stringContext[key] = value;
-
-        private readonly Dictionary<string, object> _objectContext = new Dictionary<string, object>();
-        public object GetObjectContext(string key) => _objectContext.ContainsKey(key) ? _objectContext[key] : null;
-        public void SetObjectContext(string key, object value) => _objectContext[key] = value;
     }
     internal class MacroScript
     {
@@ -60,6 +48,19 @@ namespace GCController.Macro
                 => _parent.frameTimers[label].CancelableWait(duration, token, withRestart);
 
             public void GetNextHitIndex() => _parent._hitIndex++;
+
+
+            private readonly Dictionary<string, int> _intContext = new Dictionary<string, int>();
+            public int? GetIntContext(string key) => _intContext.ContainsKey(key) ? _intContext[key] : null as int?;
+            public void SetIntContext(string key, int value) => _intContext[key] = value;
+
+            private readonly Dictionary<string, string> _stringContext = new Dictionary<string, string>();
+            public string GetStringContext(string key) => _stringContext.ContainsKey(key) ? _stringContext[key] : null;
+            public void SetStringContext(string key, string value) => _stringContext[key] = value;
+
+            private readonly Dictionary<string, object> _objectContext = new Dictionary<string, object>();
+            public object GetObjectContext(string key) => _objectContext.ContainsKey(key) ? _objectContext[key] : null;
+            public void SetObjectContext(string key, object value) => _objectContext[key] = value;
 
             private readonly MacroScript _parent;
             private readonly Stopwatch _waitTimer = new Stopwatch();
