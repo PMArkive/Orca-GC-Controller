@@ -13,7 +13,7 @@ namespace SamplePlugin
 {
     public class SampleCommand : MacroCommand
     {
-        public override void Execute(SerialPort port, in CancellationToken token, IMacroContext context)
+        public override void Execute(IWritable port, in CancellationToken token, IMacroContext context)
         {
             var seed = (uint)(context.GetIntContext("SampleCommand seed") ?? 0);
             var rand = seed.GetRand();

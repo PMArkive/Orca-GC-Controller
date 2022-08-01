@@ -6,6 +6,7 @@ using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 using ORCA_Plugin;
+using ArduinoAPI;
 
 namespace GCController.Macro
 {
@@ -143,7 +144,7 @@ namespace GCController.Macro
         private int _hitIndex = -1;
         private readonly (int Label, int Frame)[] _hitPlan;
 
-        public Task RunOnceAsync(SerialPort port, CancellationToken token)
+        public Task RunOnceAsync(IWritable port, CancellationToken token)
         {
             return Task.Run(() =>
             {
@@ -160,7 +161,7 @@ namespace GCController.Macro
                 _hitIndex = CurrentCommandIndex = -1;
             }, token);
         }
-        public Task RunLoopAsync(SerialPort port, CancellationToken token, int times = -1)
+        public Task RunLoopAsync(IWritable port, CancellationToken token, int times = -1)
         {
             return Task.Run(() =>
             {

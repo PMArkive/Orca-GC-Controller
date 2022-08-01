@@ -14,7 +14,7 @@ namespace GCController.Macro
         private readonly int _interval;
         private readonly int _label;
 
-        public override void Execute(SerialPort port, in CancellationToken token, IMacroContext context)
+        public override void Execute(IWritable port, in CancellationToken token, IMacroContext context)
         {
             if (_label != -1)
             {
@@ -47,7 +47,7 @@ namespace GCController.Macro
     {
         private readonly int _duration;
 
-        public override void Execute(SerialPort port, in CancellationToken token, IMacroContext context)
+        public override void Execute(IWritable port, in CancellationToken token, IMacroContext context)
         {
             context.Wait(_duration, token);
         }
@@ -60,7 +60,7 @@ namespace GCController.Macro
     class StartCommand : MacroCommand
     {
         private readonly int _label;
-        public override void Execute(SerialPort port, in CancellationToken token, IMacroContext context)
+        public override void Execute(IWritable port, in CancellationToken token, IMacroContext context)
         {
             context.StartTimer(_label);
             context.GetNextHitIndex();
@@ -79,7 +79,7 @@ namespace GCController.Macro
         private readonly int _duration;
         private readonly int _startLabel;
 
-        public override void Execute(SerialPort port, in CancellationToken token, IMacroContext context)
+        public override void Execute(IWritable port, in CancellationToken token, IMacroContext context)
         {
             var border = (int)(_frame * 1000 / 59.7275);
 

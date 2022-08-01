@@ -21,7 +21,7 @@ namespace GCController
 {
     public partial class Form1 : Form
     {
-        public Form1()
+        public Form1(IPort port)
         {
             InitializeComponent();
 
@@ -47,10 +47,12 @@ namespace GCController
 
             scriptBox.Highlighter = keywordHighlighter;
 
+            _port = port;
+
             UpdatePorts();
         }
 
-        private SerialPort port;
+        private IPort _port;
         private MacroScript macroScript;
         private CancellationTokenSource macroCancellationTokenSource;
         private CancellationTokenSource controllerCancellationTokenSource;
@@ -73,9 +75,9 @@ namespace GCController
         private bool connecting;
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-            if (!portsNameBox.Enabled) return;
+            if(!Program.IsDebug && !portsNameBox.Enabled) return;
 
-            if(connecting)
+            if (connecting)
             {
                 controllerCancellationTokenSource?.Cancel();
                 macroCancellationTokenSource?.Cancel();
@@ -101,15 +103,13 @@ namespace GCController
 
         private bool Connect()
         {
-            port = new SerialPort(portsNameBox.Text, 4800);
             try
             {
-                port.Open();
+                _port.Open(portsNameBox.Text);
                 return true;
             }
             catch (Exception ex)
             {
-                port = null;
                 logBox.AppendText(ex.Message + Environment.NewLine);
                 return false;
             }
@@ -119,7 +119,7 @@ namespace GCController
             try
             {
                 macroCancellationTokenSource?.Cancel();
-                port.Close();
+                _port.Close();
                 return true;
             }
             catch (Exception ex)
@@ -135,7 +135,7 @@ namespace GCController
         }
         private async Task StartKeyboardController()
         {
-            if (port == null || !port.IsOpen)
+            if (!_port.IsOpen)
             {
                 logBox.AppendText("ポートが開放されていません\r\n");
                 return;
@@ -203,7 +203,7 @@ namespace GCController
                         pressedMKey = pressing;
 
                         if (keys != prev)
-                            port.SetButtonState(keys);
+                            _port.SetButtonState(keys);
                         prev = keys;
                     }
                 }
@@ -237,7 +237,7 @@ namespace GCController
 
         private async Task RunMacro()
         {
-            if (port == null || !port.IsOpen) { logBox.AppendText("ポートが開放されていません\r\n"); return; }
+            if (!_port.IsOpen) { logBox.AppendText("ポートが開放されていません\r\n"); return; }
             if (macroScript == null)
             {
                 logBox.AppendText("マクロが検証されていません\r\n");
@@ -252,9 +252,9 @@ namespace GCController
             timer1.Enabled = true;
 
             if (loopCheckBox.Checked)
-                await macroScript?.RunLoopAsync(port, macroCancellationTokenSource.Token, (int)loopBox.Value);
+                await macroScript?.RunLoopAsync(_port, macroCancellationTokenSource.Token, (int)loopBox.Value);
             else
-                await macroScript?.RunOnceAsync(port, macroCancellationTokenSource.Token);
+                await macroScript?.RunOnceAsync(_port, macroCancellationTokenSource.Token);
 
             timer1.Enabled = false;
             toolStripStatusLabel1.Text = "";

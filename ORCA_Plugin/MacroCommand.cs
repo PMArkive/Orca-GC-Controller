@@ -7,7 +7,7 @@ namespace ORCA_Plugin
 {
     public abstract class MacroCommand
     {
-        public abstract void Execute(SerialPort port, in CancellationToken token, IMacroContext context);
+        public abstract void Execute(IWritable port, in CancellationToken token, IMacroContext context);
     }
 
     public interface IMacroCommandParser<out T>
