@@ -105,7 +105,7 @@ namespace GCController
         {
             try
             {
-                _port.Open(portsNameBox.Text);
+                _port.Open(portsNameBox.Text, rTS有効化ToolStripMenuItem.Checked, dTR有効化ToolStripMenuItem.Checked);
                 return true;
             }
             catch (Exception ex)
@@ -406,6 +406,16 @@ namespace GCController
                     yield return (attr.CommandName, parser);
                 }
             }
+        }
+
+        private void rTS有効化ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rTS有効化ToolStripMenuItem.Checked ^= true;
+        }
+
+        private void dTR有効化ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dTR有効化ToolStripMenuItem.Checked ^= true;
         }
     }
 }

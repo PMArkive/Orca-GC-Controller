@@ -12,7 +12,7 @@ namespace GCController
 {
     public interface IPort : IWritable
     {
-        void Open(string portName);
+        void Open(string portName, bool rts, bool dtr);
         bool IsOpen { get; }
         void Close();
     }
@@ -22,11 +22,11 @@ namespace GCController
 
         public void Write(byte[] buffer, int offset, int count)
             => _port?.Write(buffer, offset, count);
-        public void Open(string portName)
+        public void Open(string portName, bool rts, bool dtr)
         {
             if (IsOpen) return;
 
-            if (_port is null) _port = new SerialPort(portName, 4800);
+            if (_port is null) _port = new SerialPort(portName, 4800) { RtsEnable = rts, DtrEnable = dtr };
             _port.Open();
         }
         public bool IsOpen { get => _port?.IsOpen ?? false; }
@@ -39,7 +39,7 @@ namespace GCController
         private StringBuilder _logger;
         public void Write(byte[] buffer, int offset, int count)
             => _logger.AppendLine($"{string.Join(" ", buffer.Select(_ => $"{_:X2}"))}");
-        public void Open(string portName) => _logger = new StringBuilder();
+        public void Open(string portName, bool rts, bool dtr) => _logger = new StringBuilder();
         public bool IsOpen { get => true; }
         public void Close() => System.IO.File.WriteAllText($"./log.txt", _logger.ToString());
     }

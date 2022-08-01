@@ -62,6 +62,9 @@ namespace GCController
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.シリアル通信設定ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rTS有効化ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dTR有効化ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.loopBox)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -269,7 +272,8 @@ namespace GCController
             this.settingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.キーコンフィグToolStripMenuItem,
             this.マクロ終了後にキーボードモードに移行ToolStripMenuItem,
-            this.非アクティブキー入力有向ToolStripMenuItem});
+            this.非アクティブキー入力有向ToolStripMenuItem,
+            this.シリアル通信設定ToolStripMenuItem});
             this.settingToolStripMenuItem.Name = "settingToolStripMenuItem";
             this.settingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.settingToolStripMenuItem.Text = "Setting";
@@ -389,6 +393,33 @@ namespace GCController
             this.textBox1.TabIndex = 22;
             this.textBox1.Text = "=・ω・=";
             // 
+            // シリアル通信設定ToolStripMenuItem
+            // 
+            this.シリアル通信設定ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rTS有効化ToolStripMenuItem,
+            this.dTR有効化ToolStripMenuItem});
+            this.シリアル通信設定ToolStripMenuItem.Name = "シリアル通信設定ToolStripMenuItem";
+            this.シリアル通信設定ToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.シリアル通信設定ToolStripMenuItem.Text = "シリアル通信設定";
+            // 
+            // rTS有効化ToolStripMenuItem
+            // 
+            this.rTS有効化ToolStripMenuItem.Checked = true;
+            this.rTS有効化ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.rTS有効化ToolStripMenuItem.Name = "rTS有効化ToolStripMenuItem";
+            this.rTS有効化ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rTS有効化ToolStripMenuItem.Text = "RTS有効化";
+            this.rTS有効化ToolStripMenuItem.Click += new System.EventHandler(this.rTS有効化ToolStripMenuItem_Click);
+            // 
+            // dTR有効化ToolStripMenuItem
+            // 
+            this.dTR有効化ToolStripMenuItem.Checked = true;
+            this.dTR有効化ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.dTR有効化ToolStripMenuItem.Name = "dTR有効化ToolStripMenuItem";
+            this.dTR有効化ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dTR有効化ToolStripMenuItem.Text = "DTR有効化";
+            this.dTR有効化ToolStripMenuItem.Click += new System.EventHandler(this.dTR有効化ToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -462,6 +493,9 @@ namespace GCController
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.ToolStripMenuItem シリアル通信設定ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rTS有効化ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dTR有効化ToolStripMenuItem;
     }
 }
 
