@@ -46,7 +46,6 @@ namespace GCController
             this.keyConStopButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.新規作成ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,7 +58,16 @@ namespace GCController
             this.非アクティブキー入力有向ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loopCheckBox = new System.Windows.Forms.CheckBox();
             this.scriptBox = new Sgry.Azuki.WinForms.AzukiControl();
+            this.loopBox = new System.Windows.Forms.NumericUpDown();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.シリアル通信設定ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rTS有効化ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dTR有効化ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.loopBox)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // portsNameBox
@@ -105,6 +113,8 @@ namespace GCController
             // 
             // logBox
             // 
+            this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.logBox.Location = new System.Drawing.Point(50, 83);
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
@@ -146,7 +156,7 @@ namespace GCController
             // compileButton
             // 
             this.compileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.compileButton.Location = new System.Drawing.Point(177, 340);
+            this.compileButton.Location = new System.Drawing.Point(177, 356);
             this.compileButton.Name = "compileButton";
             this.compileButton.Size = new System.Drawing.Size(75, 23);
             this.compileButton.TabIndex = 10;
@@ -159,7 +169,7 @@ namespace GCController
             // 
             this.runButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.runButton.Enabled = false;
-            this.runButton.Location = new System.Drawing.Point(258, 340);
+            this.runButton.Location = new System.Drawing.Point(258, 356);
             this.runButton.Name = "runButton";
             this.runButton.Size = new System.Drawing.Size(75, 23);
             this.runButton.TabIndex = 11;
@@ -193,7 +203,7 @@ namespace GCController
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.Enabled = false;
-            this.cancelButton.Location = new System.Drawing.Point(258, 369);
+            this.cancelButton.Location = new System.Drawing.Point(258, 385);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 14;
@@ -206,15 +216,6 @@ namespace GCController
             // 
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
-            // 
-            // textBox1
-            // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBox1.Location = new System.Drawing.Point(50, 362);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(100, 19);
-            this.textBox1.TabIndex = 15;
             // 
             // menuStrip1
             // 
@@ -271,7 +272,8 @@ namespace GCController
             this.settingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.キーコンフィグToolStripMenuItem,
             this.マクロ終了後にキーボードモードに移行ToolStripMenuItem,
-            this.非アクティブキー入力有向ToolStripMenuItem});
+            this.非アクティブキー入力有向ToolStripMenuItem,
+            this.シリアル通信設定ToolStripMenuItem});
             this.settingToolStripMenuItem.Name = "settingToolStripMenuItem";
             this.settingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.settingToolStripMenuItem.Text = "Setting";
@@ -305,7 +307,7 @@ namespace GCController
             // 
             this.loopCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.loopCheckBox.AutoSize = true;
-            this.loopCheckBox.Location = new System.Drawing.Point(50, 340);
+            this.loopCheckBox.Location = new System.Drawing.Point(50, 360);
             this.loopCheckBox.Name = "loopCheckBox";
             this.loopCheckBox.Size = new System.Drawing.Size(45, 16);
             this.loopCheckBox.TabIndex = 18;
@@ -337,20 +339,97 @@ namespace GCController
             this.scriptBox.Name = "scriptBox";
             this.scriptBox.ScrollPos = new System.Drawing.Point(0, 0);
             this.scriptBox.ShowsDirtBar = false;
-            this.scriptBox.Size = new System.Drawing.Size(283, 167);
+            this.scriptBox.Size = new System.Drawing.Size(283, 183);
             this.scriptBox.TabIndex = 19;
             this.scriptBox.TabStop = false;
             this.scriptBox.Text = "# ここにマクロを記述します";
             this.scriptBox.ViewWidth = 4133;
             // 
+            // loopBox
+            // 
+            this.loopBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.loopBox.Location = new System.Drawing.Point(101, 360);
+            this.loopBox.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.loopBox.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.loopBox.Name = "loopBox";
+            this.loopBox.Size = new System.Drawing.Size(49, 19);
+            this.loopBox.TabIndex = 20;
+            this.loopBox.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 411);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(350, 22);
+            this.statusStrip1.TabIndex = 21;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox1.Location = new System.Drawing.Point(50, 385);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(100, 19);
+            this.textBox1.TabIndex = 22;
+            this.textBox1.Text = "=・ω・=";
+            // 
+            // シリアル通信設定ToolStripMenuItem
+            // 
+            this.シリアル通信設定ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rTS有効化ToolStripMenuItem,
+            this.dTR有効化ToolStripMenuItem});
+            this.シリアル通信設定ToolStripMenuItem.Name = "シリアル通信設定ToolStripMenuItem";
+            this.シリアル通信設定ToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.シリアル通信設定ToolStripMenuItem.Text = "シリアル通信設定";
+            // 
+            // rTS有効化ToolStripMenuItem
+            // 
+            this.rTS有効化ToolStripMenuItem.Checked = true;
+            this.rTS有効化ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.rTS有効化ToolStripMenuItem.Name = "rTS有効化ToolStripMenuItem";
+            this.rTS有効化ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rTS有効化ToolStripMenuItem.Text = "RTS有効化";
+            this.rTS有効化ToolStripMenuItem.Click += new System.EventHandler(this.rTS有効化ToolStripMenuItem_Click);
+            // 
+            // dTR有効化ToolStripMenuItem
+            // 
+            this.dTR有効化ToolStripMenuItem.Checked = true;
+            this.dTR有効化ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.dTR有効化ToolStripMenuItem.Name = "dTR有効化ToolStripMenuItem";
+            this.dTR有効化ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dTR有効化ToolStripMenuItem.Text = "DTR有効化";
+            this.dTR有効化ToolStripMenuItem.Click += new System.EventHandler(this.dTR有効化ToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(350, 406);
+            this.ClientSize = new System.Drawing.Size(350, 433);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.loopBox);
             this.Controls.Add(this.scriptBox);
             this.Controls.Add(this.loopCheckBox);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.keyConStopButton);
             this.Controls.Add(this.label4);
@@ -366,6 +445,7 @@ namespace GCController
             this.Controls.Add(this.portsNameBox);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(366, 445);
@@ -373,6 +453,9 @@ namespace GCController
             this.Text = "Orca GC Controller";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.loopBox)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -394,7 +477,6 @@ namespace GCController
         private System.Windows.Forms.Button keyConStopButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingToolStripMenuItem;
@@ -407,6 +489,13 @@ namespace GCController
         private System.Windows.Forms.CheckBox loopCheckBox;
         private System.Windows.Forms.ToolStripMenuItem キーコンフィグToolStripMenuItem;
         private Sgry.Azuki.WinForms.AzukiControl scriptBox;
+        private System.Windows.Forms.NumericUpDown loopBox;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.ToolStripMenuItem シリアル通信設定ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rTS有効化ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dTR有効化ToolStripMenuItem;
     }
 }
 

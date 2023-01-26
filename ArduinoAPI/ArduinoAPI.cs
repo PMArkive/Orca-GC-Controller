@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics;
 using System.IO.Ports;
 
-namespace GCController.SerialCommunicationWrapper
+namespace ArduinoAPI
 {
-
+    public interface IWritable
+    {
+        void Write(byte[] buffer, int offset, int count);
+    }
     /// <summary>
     /// 押下されるコントローラのボタンを表す列挙子.
     /// 論理和(OR)で繋げると複数キーが同時に押下されている状態を表せる.
@@ -37,17 +40,17 @@ namespace GCController.SerialCommunicationWrapper
         /// <param name="port"></param>
         /// <param name="button"></param>
         /// <param name="wait_ms"></param>
-        public static void PressButton(this SerialPort port, ControllerInput button, int wait_ms = 200)
+        public static void PressButton(this IWritable port, ControllerInput button, int wait_ms = 200)
         {
             var buttonState1 = (byte)((ushort)button & 0xFF);
             var buttonState2 = (byte)((ushort)button >> 8);
             var sendKeys = new byte[4] { HEAD, buttonState1, buttonState2, 0 };
 
-            port.Write(sendKeys, 0, 3);
+            port?.Write(sendKeys, 0, 3);
             sw.Restart();
             while (sw.ElapsedMilliseconds < wait_ms) { }
 
-            port.Write(keysAllUp, 0, 3);
+            port?.Write(keysAllUp, 0, 3);
         }
 
         /// <summary>
@@ -55,13 +58,13 @@ namespace GCController.SerialCommunicationWrapper
         /// </summary>
         /// <param name="port"></param>
         /// <param name="buttonsState"></param>
-        public static void SetButtonState(this SerialPort port, ControllerInput buttonsState)
+        public static void SetButtonState(this IWritable port, ControllerInput buttonsState)
         {
             var buttonState1 = (byte)((ushort)buttonsState & 0xFF);
             var buttonState2 = (byte)((ushort)buttonsState >> 8);
             var sendKeys = new byte[3] { HEAD, buttonState1, buttonState2 };
 
-            port.Write(sendKeys, 0, 3);
+            port?.Write(sendKeys, 0, 3);
         }
     }
 }
