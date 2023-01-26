@@ -372,6 +372,7 @@ namespace GCController
         private IEnumerable<(string commandName, IMacroCommandParser<MacroCommand> parser)> ImportPlugins()
         {
             var pluginDir = $"{Application.StartupPath}/Plugin";
+            if (!Directory.Exists(pluginDir)) yield break;
 
             //EXEの場所にあるDLLファイルをすべて読み込む
             foreach (var path in Directory.GetFiles(pluginDir).Where(_ => _.ToLower().EndsWith(".dll")))
